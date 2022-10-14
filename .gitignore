@@ -1,2 +1,2 @@
 # ignore massive csv file
-*.csv
+./dataverse_files/UNVotes-1.csv
