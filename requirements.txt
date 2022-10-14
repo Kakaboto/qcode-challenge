@@ -3,6 +3,6 @@ dwave_networkx
 dwave.system
 dimod
 pyreadr
-matplotlib.pyplot
+matplotlib
 numpy
 pandas
