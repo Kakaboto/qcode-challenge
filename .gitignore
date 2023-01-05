@@ -1,3 +1,1 @@
-# ignore massive csv file
-./dataverse_files/UNVotes-1.csv
-./code/__pycache__
+*.pyc

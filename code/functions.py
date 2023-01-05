@@ -78,22 +78,32 @@ def load_data(motion, csvData, fictional):
     #motion = 4
 
     if not fictional:
+        #load all raw data
         motionData = csvData['completeVotes']['rcid'] #4
         votes = csvData['completeVotes']['vote']
         countriesData = csvData['completeVotes']['Country']
-        countries, cindex = np.unique(countriesData, return_index=True)
+        # fixa så att countries inte letas upp bara som unique. Ta typ första 193 lr nått å sätt dom som countries. Annars blir countries och votes listan out of sync
+        countries = countriesData[0:197] # there are 197 members in the UN voting
         motions, mindex = np.unique(motionData, return_index=True)
-        temp = countries
-        for i in range(len(countries)):
-            if len(countries[i]) > 3:
-                temp[i] = '0'
-            else:
-                continue
-        countries = [ x for x in countries if '0' not in x ]
-
+        dataindex = mindex[motion] # Data is grouped in a long array. This index identifies the start of a data group (list of countries votes)
+        #temp = countries
+        #for i in range(len(countries)):
+        #    if len(countries[i]) > 3:
+        #        temp[i] = '0'
+        #    else:
+        #        continue
+        # pick out all the countries and votes for our motion
+        #countries = [ x for x in countries if '0' not in x ]
         G = nx.Graph()
         # HERE YOU CAN ADJUST WHICH COUNTRIES ARE INCLUDED
         clist = ['DNK', 'FRA', 'LUX', 'SWE', 'FIN', 'NLD', 'HUN', 'IRN', 'BEL', 'GBR', 'DEU', 'GRC', 'MLT', 'ITA', 'POL']
+        i = 0
+        temp = []
+        for i in range(0,len(countries)):
+            if countries[i] in clist:
+                temp.append(votes[dataindex + i])
+            else:()
+        votes = temp
         countries = [x for x in countries if x in clist]
         G.add_nodes_from(countries)
         edges = []
@@ -101,7 +111,9 @@ def load_data(motion, csvData, fictional):
         for x in countries[:-1]:
             j = i + 1
             for y in countries[j:]:
-                if votes[i + mindex[motion]] != votes[j + mindex[motion]]:
+                #print("motion: " + str(motion) + ", mindex: "+str(mindex[motion])+", vote, "+str(x)+": "+str(votes[i])+", vote, "+str(y)+": "+str(votes[j + mindex[motion]]))
+                #print(countriesData[dataindex + j])
+                if votes[i] != votes[j]:
                     edges.append([x, y, {'sign': -1}])
                 else:
                     edges.append([x, y, {'sign': 1}])
@@ -110,7 +122,7 @@ def load_data(motion, csvData, fictional):
         G.add_edges_from(edges)
         return G, edges, countries, mindex
     else:
-        numNodes = 15
+        numNodes = 3
         G = nx.complete_graph(numNodes)
         signs = [-1, 1]
         edges = []
