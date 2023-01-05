@@ -82,23 +82,15 @@ def load_data(motion, csvData, fictional):
         motionData = csvData['completeVotes']['rcid'] #4
         votes = csvData['completeVotes']['vote']
         countriesData = csvData['completeVotes']['Country']
-        # fixa så att countries inte letas upp bara som unique. Ta typ första 193 lr nått å sätt dom som countries. Annars blir countries och votes listan out of sync
         countries = countriesData[0:197] # there are 197 members in the UN voting
         motions, mindex = np.unique(motionData, return_index=True)
         dataindex = mindex[motion] # Data is grouped in a long array. This index identifies the start of a data group (list of countries votes)
-        #temp = countries
-        #for i in range(len(countries)):
-        #    if len(countries[i]) > 3:
-        #        temp[i] = '0'
-        #    else:
-        #        continue
-        # pick out all the countries and votes for our motion
-        #countries = [ x for x in countries if '0' not in x ]
         G = nx.Graph()
         # HERE YOU CAN ADJUST WHICH COUNTRIES ARE INCLUDED
         clist = ['DNK', 'FRA', 'LUX', 'SWE', 'FIN', 'NLD', 'HUN', 'IRN', 'BEL', 'GBR', 'DEU', 'GRC', 'MLT', 'ITA', 'POL']
         i = 0
         temp = []
+        # Extract votes for the clist countries and sort them into an array
         for i in range(0,len(countries)):
             if countries[i] in clist:
                 temp.append(votes[dataindex + i])
@@ -111,8 +103,6 @@ def load_data(motion, csvData, fictional):
         for x in countries[:-1]:
             j = i + 1
             for y in countries[j:]:
-                #print("motion: " + str(motion) + ", mindex: "+str(mindex[motion])+", vote, "+str(x)+": "+str(votes[i])+", vote, "+str(y)+": "+str(votes[j + mindex[motion]]))
-                #print(countriesData[dataindex + j])
                 if votes[i] != votes[j]:
                     edges.append([x, y, {'sign': -1}])
                 else:
