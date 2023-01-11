@@ -133,6 +133,9 @@ def world_order_solver(motion, type, num_runs, csvData, fictional):
 
     #sampler = LeapHybridSampler()
     if type == 'qpu':
+        # dimod is dwave package for solvers. TrackingComposite is the sampler that tracks input and output for debugging and testing. 
+        # EmbeddingComposite embeds the problem into a structured sampler (solver can have a geometry in how the qbits are structured. And likewise for the problem. It translates problem geo to solver geo)
+        # DwaveSampler is the dwave system BQM sampler.
         sampler = dimod.TrackingComposite(EmbeddingComposite(DWaveSampler(solver={'qpu': True}))) #Q sampler
     elif type == 'cpu':
         sampler = dimod.RandomSampler()
@@ -140,7 +143,7 @@ def world_order_solver(motion, type, num_runs, csvData, fictional):
         print("type has to be input as either qpu or cpu, depending on which hardware you wish to run the computations on.")
 
     G, edges, countries, mindex = load_data(motion, csvData, fictional)
-
+    # dwave networkX (dnx) is the dwave version of the general networkx python package. Solves structural imbalance problem given a sampler, graph and parameters.
     frustrated_edges, node_colors = dnx.structural_imbalance(G, sampler, num_reads=num_runs)#, chain_strength=5.0)
     set1 = int(sum(list(node_colors.values())))
     if fictional:
